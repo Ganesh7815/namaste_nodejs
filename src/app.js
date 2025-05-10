@@ -2,27 +2,19 @@ const express=require("express");
 
 const app=express();
 
-
-
-app.get("/user",(req,res)=>{
-    res.send({"firstName":"ganesh","second name":"machavarapu"});
+app.use("/test",(req,res,next)=>{
+    console.log("this is route1");
+    // res.send("this is resonpse1");
+    next();
+},(req,res,next)=>{
+    console.log("this is route2");
+    // res.send("this is respone 2");
+   
+},(req,res,next)=>{
+    console.log("this is route3");
+    // res.send("this is respone 3"); 
+    next();
 })
-
-app.post("/user",(req,res)=>{
-    // console.log("deleting the user");
-    res.send("user is posted successsfully");
-    
-})
-
-app.delete("/user",(req,res)=>{
-    res.send("user is deleted successfully");
-})
-
-
-app.use("/test",(req,res)=>{
-    res.send("this is test page u know");
-});
-
 
 
 app.listen(7777,()=>{
