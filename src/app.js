@@ -2,20 +2,16 @@ const express=require("express");
 
 const app=express();
 
-app.use("/test",(req,res,next)=>{
-    console.log("this is route1");
-    // res.send("this is resonpse1");
-    next();
-},(req,res,next)=>{
-    console.log("this is route2");
-    // res.send("this is respone 2");
-   
-},(req,res,next)=>{
-    console.log("this is route3");
-    // res.send("this is respone 3"); 
-    next();
+const {authuser} = require("./middlewares/auth");
+
+app.get("/admin/getAllData",authuser,(req,res,next)=>{
+    // admin should be authriized before the operations to made
+    res.send("this is data to sent");
 })
 
+app.get("/admin/deleteUser",authuser,(req,res,next)=>{
+    res.send("succssfully user is deleted");
+})
 
 app.listen(7777,()=>{
     console.log("server is successsfully running on the 7777"); 
