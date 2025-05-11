@@ -2,17 +2,23 @@ const express=require("express");
 
 const app=express();
 
-const {authuser} = require("./middlewares/auth");
-
-app.get("/admin/getAllData",authuser,(req,res,next)=>{
-    // admin should be authriized before the operations to made
-    res.send("this is data to sent");
+app.use("/getdata",(req,res)=>{
+    try{
+        throw new Error("this is error");
+        res.send("user data to fetached");
+    }catch(err){
+        res.status(500).send("error is occred ,plz contact admin");
+    }
 })
 
-app.get("/admin/deleteUser",authuser,(req,res,next)=>{
-    res.send("succssfully user is deleted");
+this is a wildcard error handing
+app.use("/",(err,req,res,next)=>{
+    if(err)
+    {
+        console.log("this is error occured");
+        res.send("sorry for this inconvincence");
+    }
 })
-
 app.listen(7777,()=>{
     console.log("server is successsfully running on the 7777"); 
 })
