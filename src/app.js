@@ -3,17 +3,18 @@ const {dbconncetion} = require("./config/databases");
 const {User} = require("./models/userschema");
 const app=express();
 
-
+app.use(express.json());
 app.post("/user",async (req,res)=>{
-    userobj={
-        firstName:"Surya",
-        secondName:"Machavarapu",   //this is the instance of the user
-        email:"machavarapusurya2004",
-        password:"23456",
-        age:18
-    }
-
-   const user =new User(userobj);
+    // userobj={
+    //     firstName:"Surya",
+    //     secondName:"Machavarapu",   //this is the instance of the user
+    //     email:"machavarapusurya2004",
+    //     password:"23456",
+    //     age:18
+    // }
+    
+    
+   const user =new User(req.body);
    try{
       await user.save();
      res.send("succssfully added the user details");
