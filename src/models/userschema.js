@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const validator = require("validator");
 const userSchema  = mongoose.Schema({
     firstName :{
         type:String,
@@ -9,13 +9,25 @@ const userSchema  = mongoose.Schema({
     },Email:{
         type:String,
         unique:true,
-        required:true
+        required:true,
+        validate(value){
+            if(!validator.isEmail(value))
+            {
+                throw new Error("invalid email"+value);
+            }
+        }
     },
     password:{
         type:String,
         required:true,
         minlength:8,
-        maxlength:80
+        maxlength:80,
+        validate(value){
+            if(!validator.isStrongPassword(value))
+            {
+                throw new Error("plz enter the strong password"+value);
+            }
+        }
 
     },
     age:{
@@ -25,6 +37,12 @@ const userSchema  = mongoose.Schema({
     photoUrl:{
         type:String,
         default:"https://icon-library.com/images/user-png-icon/user-png-icon-16.jpg",
+        validate(value){
+            if(!validator.isURL(value))
+            {
+                throw new Error("plz enter the valid url"+value);
+            }
+        }
     },
     about:{
         type:String,

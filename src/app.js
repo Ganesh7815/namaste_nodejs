@@ -6,22 +6,36 @@ const app=express();
 
 app.use(express.json());
 
-app.patch("/user",async (req,res)=>{
-   try{
-          const userdata=req.body;
-          const userupdated = await User.findOneAndUpdate({Email:req.body.Email},userdata,{runValidators:true});
-          console.log(userupdated);
-          if(!userupdated)
-          {
-              res.status(404).send("user not found ");
-          }
+app.patch("/user", async (req, res) => {
+  try {
+    const userdata = req.body;
+    
+     const allowed_fields = ["secondName", "age", "about", "skills", "photoUrl"];
+    const isAllowed = Object.keys(updates).every((key) =>
+      allowed_fields.includes(key)
+    );
 
-          res.send("succesfully updated");
-   }catch(err)
-   {
-      res.status(505).send("something went wrong ! plz try again");
-   }
+    if (!isAllowed) {
+      return res.status(400).send("Invalid fields in request body.");
+    }
+    const { Email } = req.body;
+    if (!Email) {
+      return res.status(400).send("Email is required to update user data.");
+    }
 
+    const userUpdated = await User.findOneAndUpdate({ Email }, userdata, {
+      runValidators: true,
+      new: true,
+    });
+
+    if (!userUpdated) {
+      return res.status(404).send("User not found.");
+    }
+
+    res.send("Successfully updated.");
+  } catch (err) {
+    res.status(500).send("Something went wrong! Please try again. " + err.message);
+  }
 });
 
 app.delete("/user",async (req,res)=>{
