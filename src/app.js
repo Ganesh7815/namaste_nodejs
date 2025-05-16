@@ -2,6 +2,8 @@ const express=require("express");
 const {dbconncetion} = require("./config/databases");
 const {User} = require("./models/userschema");
 const { ReturnDocument } = require("mongodb");
+const {validation} = require('./utils/validation');
+const bcrypt = require("bcrypt");
 const app=express();
 
 app.use(express.json());
@@ -83,23 +85,56 @@ app.get("/feed", async (req, res) => {
   }
 });
 
-app.post("/user",async (req,res)=>{
+
+app.post("/login",async (req,res)=>{
+    try{
+         const {Email,password}  = req.body;
+    const user =await User.findOne({Email:Email});
+    if(!user)
+    {
+       throw new Error("user is not found, plz register");
+    }
+
+    const isvalid = bcrypt.compareSync(password,user.password);
+    if(!isvalid)
+    {
+        throw new Error("plz enter the correct password");
+    }
+
+    res.send("user login successfully ..");
+    }catch(err)
+    {
+       res.send("Error :"+err.message);
+    }
+
+});
+app.post("/signup",async (req,res)=>{
     // userobj={
     //     firstName:"Surya",
     //     secondName:"Machavarapu",   //this is the instance of the user
     //     email:"machavarapusurya2004",
     //     password:"23456",
     //     age:18
-    // }
+    // 
     
-    
-   const user =new User(req.body);
    try{
+      validation(req);
+
+      const {firstName,secondName,Email,password} = req.body;
+     const hashpassword = bcrypt.hashSync(password, 10);
+      console.log(hashpassword);
+      
+      const user =new User({
+        firstName,
+        secondName,
+        Email,
+        password:hashpassword
+      });
       await user.save();
      res.send("succssfully added the user details");
    }catch(err)
    {
-     res.status(404).send("user data not posted"+err.message);
+     res.status(404).send("Error: "+err.message);
      
    }
 
