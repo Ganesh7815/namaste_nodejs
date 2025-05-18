@@ -4,9 +4,61 @@ const {User} = require("./models/userschema");
 const { ReturnDocument } = require("mongodb");
 const {validation} = require('./utils/validation');
 const bcrypt = require("bcrypt");
-const app=express();
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const {authuser} = require("./middlewares/auth");
 
+
+
+const app=express();
 app.use(express.json());
+app.use(cookieParser());
+
+
+app.post("/connection",authuser,(req,res)=>{
+   
+  const firstName = req.user.firstName;
+  res.send(`${firstName} is sent connection`);
+})
+app.get("/profile",authuser,async(req,res)=>{
+    
+    try{
+       const userdata =  req.user;
+        res.status(202).send(userdata + "this is profile of user");
+      }catch(err)
+      {
+          res.status(404).send("Error :"+err.message);
+      }
+        
+});
+
+
+app.post("/login",async (req,res)=>{
+  
+  try{
+         const {Email,password}  = req.body;
+    const user =await User.findOne({Email:Email});
+    if(!user)
+    {
+       throw new Error("user is not found, plz register");
+    }
+
+    const isvalid = user.isvaliduser(password);
+    if(!isvalid)
+    {
+        throw new Error("plz enter the correct password");
+    }
+
+    const token = user.getJWT();
+     res.cookie("token", token,{maxAge:60*1000,httpOnly:true});
+    
+    res.send(user.firstName + " user login successfully ..");
+    }catch(err)
+    {
+       res.status(404).send("Error :"+err.message);
+    }
+
+});
 
 app.patch("/user", async (req, res) => {
   try {
@@ -85,29 +137,6 @@ app.get("/feed", async (req, res) => {
   }
 });
 
-
-app.post("/login",async (req,res)=>{
-    try{
-         const {Email,password}  = req.body;
-    const user =await User.findOne({Email:Email});
-    if(!user)
-    {
-       throw new Error("user is not found, plz register");
-    }
-
-    const isvalid = bcrypt.compareSync(password,user.password);
-    if(!isvalid)
-    {
-        throw new Error("plz enter the correct password");
-    }
-
-    res.send("user login successfully ..");
-    }catch(err)
-    {
-       res.send("Error :"+err.message);
-    }
-
-});
 app.post("/signup",async (req,res)=>{
     // userobj={
     //     firstName:"Surya",
