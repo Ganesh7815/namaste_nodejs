@@ -8,7 +8,7 @@ const userSchema  = mongoose.Schema({
         required:true
     },secondName:{
         type:String
-    },Email:{
+    },email:{
         type:String,
         unique:true,
         required:true,
@@ -33,8 +33,7 @@ const userSchema  = mongoose.Schema({
 
     },
     age:{
-        type:Number,
-        min:18
+        type:Number
     },
     photoUrl:{
         type:String,

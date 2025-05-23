@@ -3,11 +3,16 @@ const express = require("express");
 const {User} = require("../models/userschema");
 const router = express.Router();
 const {authuser} = require("../middlewares/auth");
-router.get("/profile",authuser,async(req,res)=>{
+const {validation} = require("../utils/validation");
+const bcrypt = require("bcrypt");
+
+
+
+router.get("/profile/view",authuser,async(req,res)=>{
     
     try{
        const userdata =  req.user;
-        res.status(202).send(userdata + "this is profile of user");
+        res.status(202).send(userdata + "is profile of user");
       }catch(err)
       {
           res.status(404).send("Error :"+err.message);
@@ -17,37 +22,56 @@ router.get("/profile",authuser,async(req,res)=>{
 
 
 
-router.patch("/user", async (req, res) => {
+router.patch("/profile/update",authuser, async (req, res) => {
   try {
     const userdata = req.body;
-    
+    const user=req.user;
      const allowed_fields = ["secondName", "age", "about", "skills", "photoUrl"];
-    const isAllowed = Object.keys(updates).every((key) =>
+    const isAllowed = Object.keys(userdata).every((key) =>
       allowed_fields.includes(key)
     );
 
     if (!isAllowed) {
       return res.status(400).send("Invalid fields in request body.");
     }
-    const { Email } = req.body;
-    if (!Email) {
-      return res.status(400).send("Email is required to update user data.");
-    }
 
-    const userUpdated = await User.findOneAndUpdate({ Email }, userdata, {
-      runValidators: true,
-      new: true,
-    });
-
-    if (!userUpdated) {
-      return res.status(404).send("User not found.");
-    }
-
+    // validation(req);
+    console.log(user);
+   const userUpdated =  Object.keys(userdata).forEach((key)=>{user[key]=userdata[key]});
+  await user.save();
+   console.log(user);
     res.send("Successfully updated.");
   } catch (err) {
     res.status(500).send("Something went wrong! Please try again. " + err.message);
   }
 });
+
+
+router.patch("/profile/password",async(req,res)=>{
+    try{
+        const {email,age,newpassword} = req.body;
+        
+        const userdata = await User.findOne({ email: email });
+        if(!userdata)
+          {
+            throw new Error("user not found");
+          }
+        
+        if(userdata.age!==age)
+          {
+            throw new  Error("age should be same");
+          }
+
+          const hashpassword = bcrypt.hashSync(newpassword,10);
+          userdata.password = hashpassword;
+         await userdata.save();
+          res.send("psaaword changed successfully");
+        
+    }catch(err)
+    {
+        res.send("Error: "+err.message);
+    }
+})
 
 
 router.delete("/user",async (req,res)=>{
@@ -62,23 +86,6 @@ router.delete("/user",async (req,res)=>{
    }catch(err){
     res.status(505).send("something went wrong");
    }
-});
-
-
-router.get("/user",async (req,res)=>{
- try{
-     const usermail = req.body.email;
-     console.log(req.body);
-     
-    const finduser = await User.findOne({Email:usermail});
-    if(!finduser)
-    {
-     return res.send("no user found,plzmregister");
-    }
-     res.send(finduser);
- }catch{
-     res.status(404).send("error occured,plz try again later");
- }
 });
 
 module.exports = router;

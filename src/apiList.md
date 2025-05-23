@@ -10,7 +10,9 @@ profileRouter
 connectionRequestRouter
 - post /request/send/interested/:userId
 - post /request/send/ignore/:userId
-- post /request/review/accepted/:requestId
+
+- post /request/review/:status/:requestId
+
 - post /request/review/rejected/:requestedId
 
 

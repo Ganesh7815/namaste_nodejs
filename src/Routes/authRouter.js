@@ -5,6 +5,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const { now } = require("mongoose");
 
 router.post("/signup",async (req,res)=>{
     // userobj={
@@ -18,14 +19,14 @@ router.post("/signup",async (req,res)=>{
    try{
       validation(req);
 
-      const {firstName,secondName,Email,password} = req.body;
+      const {firstName,secondName,email,password} = req.body;
      const hashpassword = bcrypt.hashSync(password, 10);
       console.log(hashpassword);
       
       const user =new User({
         firstName,
         secondName,
-        Email,
+        email,
         password:hashpassword
       });
       await user.save();
@@ -42,8 +43,8 @@ router.post("/signup",async (req,res)=>{
 router.post("/login",async (req,res)=>{
   
   try{
-         const {Email,password}  = req.body;
-    const user =await User.findOne({Email:Email});
+         const {email,password}  = req.body;
+    const user =await User.findOne({email:email});
     if(!user)
     {
        throw new Error("user is not found, plz register");
@@ -56,7 +57,7 @@ router.post("/login",async (req,res)=>{
     }
 
     const token = user.getJWT();
-     res.cookie("token", token,{maxAge:60*1000,httpOnly:true});
+     res.cookie("token", token,{maxAge:60*60*1000,httpOnly:true});
     
     res.send(user.firstName + " user login successfully ..");
     }catch(err)
@@ -64,6 +65,12 @@ router.post("/login",async (req,res)=>{
        res.status(404).send("Error :"+err.message);
     }
 
+});
+
+router.post("/logout",(req,res)=>{
+
+    res.cookie("token",null,{expires:new Date(now())});
+    res.send("user loggout successfully");
 });
 
 

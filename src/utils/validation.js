@@ -1,15 +1,8 @@
 
 const validator = require("validator");
 function validation(req) {
-    const {firstName,secondName,password,Email} = req.body;
-
-    // if(!firstName || !secondName)
-    // {
-    //     throw new Error("Name should be enter");
-    // }
-
-    if(!validator.isEmail(Email)){
-        throw new Error("Enter the correct email");
+    if("photoUrl" in req.body && !validator.isURL(req.body.photoUrl)){
+        throw new Error("plz enter the photo url valid");
     }
 }
 
