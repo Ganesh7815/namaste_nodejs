@@ -50,6 +50,37 @@ router.post("/request/send/:status/:userId",authuser,async (req,res)=>{
 });
 
 
+router.post("/request/review/:status/:requestId",authuser,async (req,res)=>{
+  try{
+     
+    const loggedinuser = req.user
+    const {status,requestId} = req.params;
+    console.log(loggedinuser._id);
+    
+    const userindb = await Connection.findOne({
+      _id:requestId,
+      toIdFrom:loggedinuser._id,
+      status:"interested",
+    
+    });
+    
+    if(!userindb)
+    {
+      throw new Error("connection request not found");
+    }
+
+      console.log(userindb);
+
+    userindb.status=status;
+    await userindb.save();
+    res.send(`${loggedinuser.firstName} is ${status}`);
+
+  }catch(err)
+  {
+    res.status(404).json({Mesage:`Error : ${err.message}`});
+  }
+})
+
 router.get("/feed", async (req, res) => {
   try {  
     const finduser = await User.findById({_id:"682282168051c6b395dc13d6"}); // Ensure 'email' matches DB field
