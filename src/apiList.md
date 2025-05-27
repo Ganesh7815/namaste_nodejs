@@ -8,16 +8,15 @@ profileRouter
 - patch /profile/password
 
 connectionRequestRouter
-- post /request/send/interested/:userId
-- post /request/send/ignore/:userId
+- post /request/send/:status/:userId  - ignored,interested
 
-- post /request/review/:status/:requestId
-
-- post /request/review/rejected/:requestedId
+- post /request/review/:status/:requestId   - accepted,rejected
 
 
+
+
+- get /requests/received
 
 - get /connections
-- get /requests/received
 - get /feed - gest you the profiles of other users on the platform
 status - ignore,interested,accepted,rejected

@@ -69,7 +69,7 @@ router.post("/request/review/:status/:requestId",authuser,async (req,res)=>{
       throw new Error("connection request not found");
     }
 
-      console.log(userindb);
+      // console.log(userindb);
 
     userindb.status=status;
     await userindb.save();
@@ -81,20 +81,6 @@ router.post("/request/review/:status/:requestId",authuser,async (req,res)=>{
   }
 })
 
-router.get("/feed", async (req, res) => {
-  try {  
-    const finduser = await User.findById({_id:"682282168051c6b395dc13d6"}); // Ensure 'email' matches DB field
-    
-    if(finduser.length==0)
-    {
-      res.send("no user found,plz register");
-    }
-    res.send(finduser);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error occurred");
-  }
-});
 
 
 module.exports = router;
