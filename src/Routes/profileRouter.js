@@ -12,10 +12,10 @@ router.get("/profile/view",authuser,async(req,res)=>{
     
     try{
        const userdata =  req.user;
-        res.status(202).send(userdata + "is profile of user");
+        res.status(202).json({data:userdata});
       }catch(err)
       {
-          res.status(404).send("Error :"+err.message);
+          res.status(402).json({error:err.message});
       }
         
 });
@@ -26,23 +26,21 @@ router.patch("/profile/update",authuser, async (req, res) => {
   try {
     const userdata = req.body;
     const user=req.user;
-     const allowed_fields = ["secondName", "age", "about", "skills", "photoUrl"];
+     const allowed_fields = ["firstName","secondName", "age", "about", "skills", "photoUrl","gender"];
     const isAllowed = Object.keys(userdata).every((key) =>
       allowed_fields.includes(key)
     );
 
     if (!isAllowed) {
-      return res.status(400).send("Invalid fields in request body.");
+      return res.status(402).json({"error":"Invalid fields in request body"});
     }
 
     // validation(req);
-    console.log(user);
    const userUpdated =  Object.keys(userdata).forEach((key)=>{user[key]=userdata[key]});
   await user.save();
-   console.log(user);
-    res.send("Successfully updated.");
+    res.status(202).send({data:user});
   } catch (err) {
-    res.status(500).send("Something went wrong! Please try again. " + err.message);
+    res.status(402).json({"error":err.message});
   }
 });
 

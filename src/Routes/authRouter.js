@@ -29,11 +29,14 @@ router.post("/signup",async (req,res)=>{
         email,
         password:hashpassword
       });
-      await user.save();
-     res.send("succssfully added the user details");
+      const updateduser =  await user.save();
+      const token = user.getJWT();
+     res.cookie("token", token,{maxAge:60*60*1000,httpOnly:true});
+    
+    res.status(202).json({data:user});
    }catch(err)
    {
-     res.status(404).send("Error: "+err.message);
+     res.status(404).json({error:err.message});
      
    }
 
@@ -47,22 +50,22 @@ router.post("/login",async (req,res)=>{
     const user =await User.findOne({email:email});
     if(!user)
     {
-       throw new Error("user is not found, plz register");
+       throw new Error("Invalid credationals");
     }
 
     const isvalid = user.isvaliduser(password);
     if(!isvalid)
     {
-        throw new Error("plz enter the correct password");
+        throw new Error("Invalid credationals");
     }
 
     const token = user.getJWT();
      res.cookie("token", token,{maxAge:60*60*1000,httpOnly:true});
     
-    res.send(user.firstName + " user login successfully ..");
+    res.status(202).json({data:user});
     }catch(err)
     {
-       res.status(404).send("Error :"+err.message);
+       res.status(402).json({error:err.message});
     }
 
 });
@@ -70,7 +73,7 @@ router.post("/login",async (req,res)=>{
 router.post("/logout",(req,res)=>{
 
     res.cookie("token",null,{expires:new Date(now())});
-    res.send("user loggout successfully");
+    res.status(202).json({message:"logout successfully"});
 });
 
 

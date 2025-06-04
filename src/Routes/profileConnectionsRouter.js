@@ -4,7 +4,7 @@ const {Connection} = require("../models/connection");
 const {User} = require("../models/userschema");
 const router = express.Router();
 
-const allowed_fileds = ["firstName","secondName","photoUrl","skills"];
+const allowed_fileds = ["firstName","secondName","photoUrl","skills","about","age","gender"];
 router.get("/requests/received",authuser,async (req,res) =>{
   try{
 
@@ -14,20 +14,18 @@ router.get("/requests/received",authuser,async (req,res) =>{
 
     if(numberofconnections.length<=0)
     {
-        res.json({"message":"there are no requests recived at present"});
+        res.status(202).json({data:"there are no requests recived at present"});
         return;
     }
 
     const userConnections = numberofconnections.map(connection =>{
         return connection.fromIdFrom;
     })
-    res.json({"message":"data fatched successfully",
-      "data": userConnections
-  });
+    res.status(202).json({data: userConnections});
 
   }catch(err)
   {
-    res.status(404).status(404).json({"message th":`${err.message}`});
+    res.status(404).status(404).json({error:`${err.message}`});
   }
 });
 
@@ -43,7 +41,7 @@ router.get("/connections",authuser, async (req,res)=>{
 
         if(totalConnections.length<=0)
         {
-            res.json({"Message":"you have not made any Connections yet!!"});
+            res.status(202).json({data:"you have not made any Connections yet!!"});
             return;
         }
 
@@ -56,13 +54,11 @@ router.get("/connections",authuser, async (req,res)=>{
             }
         });
 
-        res.json({"Message":"Data fatched successfully..",
-            "data":otherusers
-        });
+        res.status(202).json({data:otherusers});
 
      }catch(err)
      {
-        res.status(404).json({"Error ":`${err.message}`});
+        res.status(402).json({error:`${err.message}`});
      }
 });
 
@@ -76,16 +72,13 @@ router.get("/feed", authuser, async (req, res) => {
     // 5. your carding
 
     var page = parseInt(req.query.page) || 1;
-    var limit = parseInt(req.query.limit) || 2;
+    var limit = parseInt(req.query.limit);
 
-    limit = limit>2? 2: limit;
-    page = page>3? 3 : page;
+    // limit = limit>2? 2: limit;
+    // page = page>3? 3 : page;
 
     const skip = (page-1)*limit;
-
-    console.log("limit:"+limit+" "+"page: "+page);
     
-
     const loggedinuser = req.user;
     const hidingUsers = await Connection.find({
       $or: [{ fromIdFrom: loggedinuser }, { toIdFrom: loggedinuser }]
@@ -104,9 +97,9 @@ router.get("/feed", authuser, async (req, res) => {
       _id: { $nin: [...uniqueuserids, loggedinuser._id] }
     }).select(allowed_fileds).skip(skip).limit(limit);
 
-    res.json({ message: "Data fetched successfully!", remainingUsers });
+    res.json({data:remainingUsers});
   } catch (err) {
-    res.json({ error: `${err.message}` });
+    res.json({error:err.message});
   }
 });
 

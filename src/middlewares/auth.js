@@ -25,7 +25,7 @@ const authuser=async (req,res,next)=>{
             next();
     }catch(err)
     {
-        res.send("Error : "+err.message);
+        res.status(402).json({error:err.message});
     }
 
 }

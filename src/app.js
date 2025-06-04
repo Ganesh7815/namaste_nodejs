@@ -2,10 +2,14 @@ const express=require("express");
 const {dbconncetion} = require("./config/databases");
 const cookieParser = require("cookie-parser");
 const { ReturnDocument } = require("mongodb");
+const cors = require("cors");
 
 const app=express();
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors({origin:"http://localhost:5173",credentials:true},
+      
+));
 
 
 const authRouter = require("./Routes/authRouter");

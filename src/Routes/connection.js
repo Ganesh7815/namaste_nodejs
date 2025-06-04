@@ -21,7 +21,7 @@ router.post("/request/send/:status/:userId",authuser,async (req,res)=>{
                 throw new Error("Conncetion is already sented,plz check once in  the list");
               }
               const touser =await User.findById({_id:toIdFrom});
-              console.log(touser);
+              // console.log(touser);
               
               if(!touser){
                 throw new Error("plz sent to valid user");
@@ -41,10 +41,10 @@ router.post("/request/send/:status/:userId",authuser,async (req,res)=>{
 
              await connection.save();
 
-             res.send("connection request sent successfully!!!");
+             res.status(202).json({data:"succesfflu sent"});
      }catch(err)
      {
-        res.status(404).send("Error: "+err.message);
+        res.status(402).json({error:err.message});
      }
 
 });
@@ -55,10 +55,10 @@ router.post("/request/review/:status/:requestId",authuser,async (req,res)=>{
      
     const loggedinuser = req.user
     const {status,requestId} = req.params;
-    console.log(loggedinuser._id);
+    console.log(requestId);
     
     const userindb = await Connection.findOne({
-      _id:requestId,
+      fromIdFrom:requestId,
       toIdFrom:loggedinuser._id,
       status:"interested",
     
@@ -73,11 +73,11 @@ router.post("/request/review/:status/:requestId",authuser,async (req,res)=>{
 
     userindb.status=status;
     await userindb.save();
-    res.send(`${loggedinuser.firstName} is ${status}`);
+    res.status(202).json({data:"successfully"})
 
   }catch(err)
   {
-    res.status(404).json({Mesage:`Error : ${err.message}`});
+    res.status(402).json({error: `${err.message}`});
   }
 })
 
