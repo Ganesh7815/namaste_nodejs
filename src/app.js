@@ -2,7 +2,9 @@ const express=require("express");
 const {dbconncetion} = require("./config/databases");
 const cookieParser = require("cookie-parser");
 const { ReturnDocument } = require("mongodb");
+require('dotenv').config();
 const cors = require("cors");
+const PORT = process.env.PORT || 7777 ;
 
 const app=express();
 app.use(express.json());
@@ -26,7 +28,7 @@ app.use("/",profileConnection);
 
 dbconncetion().then(()=>{
     console.log("database connection is estalbished");
-    app.listen(7777,()=>{
+    app.listen(PORT,()=>{
     console.log("server is successsfully running on the 7777"); 
     })
 }).catch(err=>{

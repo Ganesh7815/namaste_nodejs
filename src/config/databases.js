@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+require('dotenv').config();
 // const dbconnection = mongoose.connect("mongodb+srv://machavarapuganesh:Ganesh123%40@namastenode.n20u3pz.mongodb.net/Namastedb");
 // if(dbconnection)
 // {
@@ -26,7 +27,7 @@ const mongoose = require("mongoose");
 
 
 const dbconncetion = async () =>{
-   await  mongoose.connect("mongodb+srv://machavarapuganesh:Ganesh123%40@namastenode.n20u3pz.mongodb.net/Namastedb");
+   await  mongoose.connect(process.env.MONGO_URL);
 };
 
 module.exports={dbconncetion};
