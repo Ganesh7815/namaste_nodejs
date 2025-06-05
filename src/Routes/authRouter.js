@@ -31,7 +31,13 @@ router.post("/signup",async (req,res)=>{
       });
       const updateduser =  await user.save();
       const token = user.getJWT();
-     res.cookie("token", token,{maxAge:60*60*1000,httpOnly:true});
+     res.cookie("token", token, {
+  httpOnly: true,
+  secure: true,
+  sameSite: "None",
+  maxAge: 24 * 60 * 60 * 1000,
+});
+
     
     res.status(202).json({data:user});
    }catch(err)
@@ -60,7 +66,13 @@ router.post("/login",async (req,res)=>{
     }
 
     const token = user.getJWT();
-     res.cookie("token", token,{maxAge:60*60*1000,httpOnly:true});
+     res.cookie("token", token, {
+  httpOnly: true,
+  secure: true,
+  sameSite: "None", 
+  maxAge: 24 * 60 * 60 * 1000,
+});
+
     
     res.status(202).json({data:user});
     }catch(err)
